@@ -1,0 +1,99 @@
+[gd_scene load_steps=13 format=3 uid="uid://b1k0glnhqsxsp"]
+
+[ext_resource type="Script" uid="uid://b5wigo71c1yu7" path="res://player.gd" id="1_f3sb7"]
+[ext_resource type="Script" uid="uid://bibnasyqdgnrm" path="res://area_3d.gd" id="2_fj7yv"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_f3sb7"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_fj7yv"]
+sky_material = SubResource("ProceduralSkyMaterial_f3sb7")
+
+[sub_resource type="Environment" id="Environment_tlwt5"]
+background_mode = 2
+sky = SubResource("Sky_fj7yv")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_f3sb7"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_fj7yv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f3sb7"]
+albedo_color = Color(1.86507e-07, 0.277685, 2.64719e-07, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_f3sb7"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_f3sb7"]
+data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_f3sb7"]
+size = Vector3(4.55359, 2.53027, 5.15808)
+
+[sub_resource type="BoxMesh" id="BoxMesh_f3sb7"]
+
+[node name="World" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_tlwt5")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Player" type="CharacterBody3D" parent="."]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1.0958, 0)
+collision_layer = 2
+script = ExtResource("1_f3sb7")
+
+[node name="Camera3D" type="Camera3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.536795, -0.332162)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
+mesh = SubResource("CapsuleMesh_f3sb7")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_fj7yv")
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_f3sb7")
+mesh = SubResource("PlaneMesh_f3sb7")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Floor"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_f3sb7")
+
+[node name="TestVessel" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.03591, 9.81725)
+
+[node name="Area3D" type="Area3D" parent="TestVessel"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("2_fj7yv")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TestVessel/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.40033, -0.765137, 2.07904)
+shape = SubResource("BoxShape3D_f3sb7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="TestVessel"]
+transform = Transform3D(1, 0, 0, 0, 3.34494, 0, 0, 0, 5.81149, -2.3747, -1.20827, 2.41555)
+mesh = SubResource("BoxMesh_f3sb7")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="TestVessel"]
+transform = Transform3D(1, 0, 0, 0, 3.34494, 0, 0, 0, 5.81149, 2.19507, -1.20827, 2.41555)
+mesh = SubResource("BoxMesh_f3sb7")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="TestVessel"]
+transform = Transform3D(-4.37825e-08, -5.58215, 0, 1.00163, -2.44003e-07, 0, 0, 0, 5.82095, -0.0812896, 0.909765, 2.41555)
+mesh = SubResource("BoxMesh_f3sb7")
+
+[node name="Label3D" type="Label3D" parent="TestVessel"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.9319, -0.514545)
+text = "FREE CANDY INSIDE"
+font_size = 107
+
+[connection signal="body_entered" from="TestVessel/Area3D" to="TestVessel/Area3D" method="_on_body_entered"]
+[connection signal="body_exited" from="TestVessel/Area3D" to="TestVessel/Area3D" method="_on_body_exited"]
